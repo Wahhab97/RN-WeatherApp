@@ -1,4 +1,5 @@
 export const colors = {
-  primaryBackground: "#000000",
+  primaryBackground: "#313030",
+  secondaryBackground: "#000000",
   primaryText: "#ffffff",
 };
