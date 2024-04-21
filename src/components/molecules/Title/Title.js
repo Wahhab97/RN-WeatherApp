@@ -12,7 +12,7 @@ export default Title;
 
 const styles = StyleSheet.create({
   title: {
-    fontSize: 36,
+    fontSize: 28,
     fontWeight: "bold",
   }
 });
