@@ -3,17 +3,18 @@ import { FlatList, ScrollView, StyleSheet, View } from "react-native";
 import AppInput from "../../components/atoms/AppInput/AppInput";
 import AppButton from "../../components/atoms/AppButton/AppButton";
 import { getCityWeather } from "../../../helpers/http";
-import Card from "../../components/atoms/Card/Card";
-// import CitiesListItem from "../../components/molecules/CitiesListItem/CitiesListItem";
 import { useNavigation } from "@react-navigation/native";
 import { colors } from "../../../themes/styles/colors";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleUnit } from "../../../store/unitSlice";
 import CitiesListItem from "../../components/molecules/CitiesList/CitiesListItem";
+import NoCity from "../../components/molecules/CitiesList/NoCity";
+import { formatTempBasedOnUnit } from "../../../helpers/formatTemp";
 
 const SearchScreen = () => {
   const navigation = useNavigation();
-  const unit = useSelector(state => state.unit);
+  const unit = useSelector((state) => state.unit);
+  const favorites = useSelector((state) => state.favorites);
   const dispatch = useDispatch();
 
   const unitPressHandler = () => {
@@ -29,7 +30,7 @@ const SearchScreen = () => {
             backgroundColor={colors.primaryBackground}
             textColor={colors.primaryText}
             onPress={unitPressHandler}
-            style={{width: 40}}
+            style={{ width: 40 }}
           >
             °{unit}
           </AppButton>
@@ -51,7 +52,6 @@ const SearchScreen = () => {
         weatherData: weather,
       });
     }
-    console.log("weather", weather);
   };
 
   return (
@@ -71,10 +71,16 @@ const SearchScreen = () => {
           Search
         </AppButton>
       </View>
-      <ScrollView>
-        
+      <ScrollView style={styles.cardsContainer} alwaysBounceVertical={false}>
+        {favorites.length === 0 && <NoCity />}
+        {favorites.length > 0 &&
+          favorites.map((item) => {
+            return <CitiesListItem
+              key={item.id}
+              city={item}
+            />;
+          })}
       </ScrollView>
-      <CitiesListItem />
     </ScrollView>
   );
 };
@@ -89,6 +95,10 @@ const styles = StyleSheet.create({
     gap: 10,
     width: "90%",
     marginBottom: 20,
+  },
+  cardsContainer: {
+    flex: 1,
+    paddingVertical: 15,
   },
   button: {
     padding: 4,
