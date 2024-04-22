@@ -1,6 +1,5 @@
 import React, { useLayoutEffect, useState } from "react";
-import { FlatList, ScrollView, StyleSheet, View } from "react-native";
-import AppInput from "../../components/atoms/AppInput/AppInput";
+import { FlatList, StyleSheet } from "react-native";
 import AppButton from "../../components/atoms/AppButton/AppButton";
 import { getCityWeather } from "../../../helpers/http";
 import { useNavigation } from "@react-navigation/native";
@@ -8,8 +7,8 @@ import { colors } from "../../../themes/styles/colors";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleUnit } from "../../../store/unitSlice";
 import CitiesListItem from "../../components/molecules/CitiesList/CitiesListItem";
-import NoCity from "../../components/molecules/CitiesList/NoCity";
-import { formatTempBasedOnUnit } from "../../../helpers/formatTemp";
+import SearchHeader from "./SearchHeader/SearchHeader";
+import LoadingOverlay from "../../components/atoms/LoadingOverlay/LoadingOverlay";
 
 const SearchScreen = () => {
   const navigation = useNavigation();
@@ -39,68 +38,41 @@ const SearchScreen = () => {
     });
   }, [navigation, unit]);
 
-  const [city, setCity] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const cityChangeHandler = (value) => {
-    setCity(value.nativeEvent.text);
-  };
-  const getWeather = async () => {
+  const getWeather = async (city) => {
+    setLoading(true);
     const weather = await getCityWeather(city);
+    setLoading(false)
     if (weather) {
       navigation.navigate("CityWeather", {
         weatherData: weather,
       });
     }
   };
+  if (loading) {
+    return <LoadingOverlay />
+  }
 
   return (
-    <ScrollView alwaysBounceVertical={false}>
-      <View style={styles.searchContainer}>
-        <AppInput
-          value={city}
-          onChange={cityChangeHandler}
-          placeholder="Search for a City"
-        />
-        <AppButton
-          backgroundColor="#dcdcdc"
-          onPress={getWeather}
-          disabled={!city || loading}
-          style={styles.button}
-        >
-          Search
-        </AppButton>
-      </View>
-      <ScrollView style={styles.cardsContainer} alwaysBounceVertical={false}>
-        {favorites.length === 0 && <NoCity />}
-        {favorites.length > 0 &&
-          favorites.map((item) => {
-            return <CitiesListItem
-              key={item.id}
-              city={item}
-            />;
-          })}
-      </ScrollView>
-    </ScrollView>
+    <FlatList
+      ListHeaderComponent={<SearchHeader loading={loading} onSearch={getWeather} />}
+      data={favorites}
+      keyExtractor={(item) => item.id}
+      renderItem={(itemData) => <CitiesListItem city={itemData.item} />}
+      style={styles.cardsContainer}
+      alwaysBounceVertical={false}
+      showsVerticalScrollIndicator={false}
+      keyboardShouldPersistTaps="always"
+    />
   );
 };
 
 export default SearchScreen;
 
 const styles = StyleSheet.create({
-  searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    alignSelf: "center",
-    gap: 10,
-    width: "90%",
-    marginBottom: 20,
-  },
   cardsContainer: {
     flex: 1,
     paddingVertical: 15,
-  },
-  button: {
-    padding: 4,
   },
 });
