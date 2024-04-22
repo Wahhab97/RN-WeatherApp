@@ -1,5 +1,5 @@
 import React, { useLayoutEffect, useState } from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { View } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import IoniconsButton from "../../components/molecules/IoniconsButton/IoniconsButton";
 import { useDispatch, useSelector } from "react-redux";
@@ -8,7 +8,9 @@ import { colors } from "../../../themes/styles/colors";
 import AppText from "../../components/atoms/AppText/AppText";
 import Title from "../../components/molecules/Title/Title";
 import { formatTempBasedOnUnit } from "../../../helpers/formatTemp";
-import { FontAwesome5, Ionicons } from "@expo/vector-icons";
+import { FontAwesome5 } from "@expo/vector-icons";
+import WeatherIcon from "../../components/atoms/WeatherIcon/WeatherIcon";
+import {styles} from "./CityWeatherScreen.styles";
 
 const CityWeatherScreen = () => {
   const navigation = useNavigation();
@@ -70,12 +72,7 @@ const CityWeatherScreen = () => {
           <Title>{city}</Title>
           <AppText style={styles.text}>{temp}°</AppText>
           <View style={styles.description}>
-            <Image
-              style={styles.icon}
-              source={{
-                uri: `https://openweathermap.org/img/wn/${icon}@2x.png`,
-              }}
-            />
+            <WeatherIcon icon={icon}/>
             <AppText style={styles.text}>
               {weather.weather[0].description}
             </AppText>
@@ -116,56 +113,3 @@ const CityWeatherScreen = () => {
 };
 
 export default CityWeatherScreen;
-
-const styles = StyleSheet.create({
-  container: {
-    justifyContent: "center",
-    alignItems: "center",
-    flex: 1,
-  },
-  card: {
-    padding: 50,
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 60,
-    backgroundColor: colors.secondaryBackground,
-    borderRadius: 22,
-    elevation: 4,
-    shadowColor: colors.primaryText,
-    shadowRadius: 15,
-    shadowOpacity: 0.5,
-    shadowOffset: {height: 0, width: 0},
-  },
-  general: {
-    alignItems: "center",
-    gap: 7,
-  },
-  temprature: {},
-  description: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 5,
-  },
-  minMax: {
-    gap: 25,
-  },
-  icon: {
-    width: 36,
-    height: 36,
-    backgroundColor: "#bbb",
-    borderRadius: 18,
-  },
-  wind: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    gap: 12,
-  },
-  text: {
-    fontSize: 24,
-  },
-  textSmall: {
-    fontSize: 20,
-  },
-});
